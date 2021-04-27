@@ -12,7 +12,7 @@
       <Label fx:id="timerLbl" alignment="CENTER" layoutX="150.0" layoutY="14.0" prefHeight="30.0" prefWidth="200.0" text="타이머" textAlignment="CENTER" />
       <TextArea fx:id="gameInfoTxtAr" editable="false" layoutX="29.0" layoutY="66.0" prefHeight="200.0" prefWidth="442.0" />
       <TextArea fx:id="statTxtAr" editable="false" layoutX="29.0" layoutY="277.0" prefHeight="100.0" prefWidth="215.0" />
-      <TextArea fx:id="InventoryTxtAr" editable="false" layoutX="256.0" layoutY="277.0" prefHeight="100.0" prefWidth="215.0" text="0&#10;1&#10;2&#10;3&#10;4" />
+      <TextArea fx:id="inventoryTxtAr" editable="false" layoutX="256.0" layoutY="277.0" prefHeight="100.0" prefWidth="215.0" text="0&#10;1&#10;2&#10;3&#10;4" />
       <TextField fx:id="userInputTxtFd" layoutX="29.0" layoutY="447.0" prefHeight="22.0" prefWidth="357.0" />
       <Button fx:id="userInputBtn" layoutX="405.0" layoutY="447.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="61.0" text="전송" />
    </children>

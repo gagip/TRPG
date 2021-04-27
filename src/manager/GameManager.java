@@ -3,14 +3,14 @@ package manager;
 import character.Player;
 
 /**
- * Å¸ÀÌ¸Ó °ü¸®¿Í ÇÔ²² °ÔÀÓ Àü¹İÀûÀÎ ±ÔÄ¢(Å¬¸®¾î, °ÔÀÓ¿À¹ö µî)À» °ü¸®ÇÏ´Â °ü¸®ÀÚ Å¬·¡½º 
+ * ì „ë°˜ì ì¸ ê²Œì„ ê·œì¹™(í´ë¦¬ì–´, ê²Œì„ì˜¤ë²„, íŒ¨ë°° ë“±)ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
  * @author gagip
  *
  */
 public class GameManager {
 	private static GameManager gm = new GameManager();
 	
-	// ÃÊ±â°ª
+	// ì´ˆê¸°ê°’
 	public static final int DEFAULT_HP = 100;
 	public static final int DEFAULT_ATTACK = 10;
 	public static final int DEFAULT_DEFENSE = 1;

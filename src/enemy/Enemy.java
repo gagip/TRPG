@@ -3,7 +3,7 @@ package enemy;
 import character.Player;
 
 /**
- * ¸ó½ºÅÍ Å¬·¡½º
+ * ëª¬ìŠ¤í„° í´ë˜ìŠ¤
  * @author gagip
  *
  */

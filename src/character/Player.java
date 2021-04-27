@@ -1,17 +1,16 @@
 package character;
 
 import enemy.Enemy;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import item.Inventory;
 import place.Place;
 
 /**
- * À¯Àú°¡ Á¦¾îÇÏ´Â Ä³¸¯ÅÍ Å¬·¡½º
+ * í”Œë ˆì´ì–´ê°€ ì œì–´í•˜ëŠ” í´ë˜ìŠ¤
  * @author gagip
  *
  */
 public class Player{
-	// ÀüÅõ º¯¼ö
+	// ëŠ¥ë ¥ì¹˜ ë³€ìˆ˜
 	private int maxHp;
 	private int hp;
 	private int maxAttack;
@@ -19,14 +18,14 @@ public class Player{
 	private int maxDefense;
 	private int defense;
 	
-	// ÀçÈ­ º¯¼ö
+	// ì¬í™” ë³€ìˆ˜
 	private int money;
 	
-	// ÇöÀç À§Ä¡
+	// ì°¸ì¡° ë³€ìˆ˜
 	private Place place;
+	private Inventory inven;
 	
 	
-	// »ı¼ºÀÚ
 	public Player(int maxHp, int maxAttack, int maxDefense, int money) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;
@@ -35,6 +34,8 @@ public class Player{
 		this.maxDefense = maxDefense;
 		this.defense = maxDefense;
 		this.money = money;
+		
+		inven = new Inventory();
 	}
 	
 	
@@ -43,10 +44,6 @@ public class Player{
 	}
 	
 	
-	/**
-	 * ÀûÀ» °ø°İÇÏ´Â ¸Ş¼Òµå 
-	 * @param enemy °ø°İÇÒ ¸ó½ºÅÍ
-	 */
 	public void attack(Enemy enemy) {
 		int damage = this.attack = enemy.getDefense();
 		if (damage <= 0) damage = 1;
@@ -58,7 +55,18 @@ public class Player{
 	}
 
 
-	
+	@Override
+	public String toString() {
+		return String.format(
+				"ì²´ë ¥: %d/%d\n"
+				+ "ê³µê²©ë ¥: %d\n"
+				+ "ë°©ì–´ë ¥: %d\n"
+				+ "ëˆ: %d"
+				, hp, maxHp
+				, attack
+				, defense
+				, money);
+	}
 	
 	
 	public int getHp() {
@@ -128,5 +136,9 @@ public class Player{
 
 	public void setMaxDefense(int maxDefense) {
 		this.maxDefense = maxDefense;
+	}
+	
+	public Inventory getInven() {
+		return inven;
 	}
 }

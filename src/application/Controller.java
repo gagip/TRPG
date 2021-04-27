@@ -4,12 +4,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import character.Player;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import item.Inventory;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -21,59 +18,38 @@ import manager.GameManager;
 
 
 /**
- * FXMLÀ» Á¦¾îÇÏ´Â Å¬·¡½º
+ * FXMLì„ ì œì–´í•˜ëŠ” í´ë˜ìŠ¤
  * @author gagip
  *
  */
 public class Controller implements Initializable {
-
 	@FXML private Label timerLbl;
-	@FXML private TextArea gameInfoTxtAr, statTxtAr, InventoryTxtAr;
+	@FXML private TextArea gameInfoTxtAr, statTxtAr, inventoryTxtAr;
 	@FXML private TextField userInputTxtFd;
 	@FXML private Button userInputBtn;
 	
-	Player player;
-
+	private static Controller instance = new Controller();
 	
+	public static Controller getInstance() {
+		return instance;
+	}
+	
+	Player player;
+   	public ObjectProperty<Player> playerProperty = new SimpleObjectProperty<Player>(); 
+	public ObjectProperty<Inventory> invenProperty = new SimpleObjectProperty<Inventory>();
 	public Controller() {
+		// player ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		player = GameManager.getInstance().player;
+		playerProperty.set(player);
+		invenProperty.set(player.getInven());
 	}
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		statTxtAr.setText(String.format(
-				"Ã¼·Â: %d/%d\n"
-				+ "°ø°İ·Â: %d\n"
-				+ "¹æ¾î·Â: %d"
-				, player.getHp(), player.getMaxHp()
-				, player.getAttack()
-				, player.getDefense()));
 		
-//		// ·Î±×ÀÎ ¹öÆ° ÀÌº¥Æ®
-//		loginBtn.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent arg0) {
-//				String id = idInput.getText();
-//				String pw = pwInput.getText();
-//				
-//				
-//				switch (model.login(id, pw)) {
-//				case SUCCESS:
-//					resultLabel.setText("·Î±×ÀÎ ¼º°ø");
-//					break;
-//				case NOT_EXIST_ID:
-//					resultLabel.setText("Á¸ÀçÇÏÁö ¾Ê´Â ¾ÆÀÌµğÀÔ´Ï´Ù");
-//					break;
-//				case PASSWORD_MISMATCH:
-//					resultLabel.setText("ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù");
-//					break;
-//				case EMPTY_FILED:
-//					resultLabel.setText("¾ÆÀÌµğ³ª ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇÏÁö ¾Ê¾Ò½À´Ï´Ù");
-//					break;
-//				}
-//			}
-//		});
-		
+		statTxtAr.textProperty().bind(playerProperty.asString());
+		inventoryTxtAr.textProperty().bind(invenProperty.asString());
+			
 	}
 	
 }

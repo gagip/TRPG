@@ -2,7 +2,7 @@ package manager;
 
 
 /**
- * Character¿Í Enemy °£ÀÇ ÀüÅõ¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
+ * Playerì™€ Enemyì˜ ì „íˆ¬ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
  * @author gagip
  *
  */

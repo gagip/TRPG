@@ -1,11 +1,11 @@
 package item;
 
 /**
- * Character°¡ »ç¿ë °¡´ÉÇÑ ¾ÆÀÌÅÛ Å¬·¡½º
+ * ì†Œë¹„ì™€ ì¥ì°© ì•„ì´í…œ ìƒìœ„ í´ë˜ìŠ¤
  * @author gagip
  *
  */
 public class Item {
-	public String name;							// ÀÌ¸§
+	public String name;							// ì´ë¦„
 	public String description;
 }

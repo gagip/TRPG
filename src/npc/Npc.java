@@ -1,15 +1,15 @@
 package npc;
 
 /**
- * Character¿Í »óÈ£ÀÛ¿ë °¡´ÉÇÑ NPC Ãß»ó Å¬·¡½º
+ * Playerì™€ ìƒí˜¸ì‘ìš©í•  ìˆ˜ ìˆëŠ” NPC í´ë˜ìŠ¤
  * @author gagip
  *
  */
 public abstract class Npc {
-	// ÇÊµå
+	// ï¿½Êµï¿½
 	
 	
-	// ¸Ş¼Òµå
-	public abstract void talk();				// ´ëÈ­
-	public abstract void interact();			// »óÈ£ÀÛ¿ë (NPC¸¶´Ù ´Ù¸§)
+	// ï¿½Ş¼Òµï¿½
+	public abstract void talk();				// ï¿½ï¿½È­
+	public abstract void interact();			// ï¿½ï¿½È£ï¿½Û¿ï¿½ (NPCï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½)
 }

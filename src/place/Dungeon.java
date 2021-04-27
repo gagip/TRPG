@@ -4,6 +4,11 @@ import java.util.Stack;
 
 import enemy.Enemy;
 
+/**
+ * 몬스터들이 있는 던전 클래스
+ * @author gagip
+ *
+ */
 public class Dungeon extends Place {
 	
 	private Stack<Enemy> enemies = new Stack<Enemy>();
@@ -15,7 +20,7 @@ public class Dungeon extends Place {
 	
 	@Override
 	public String getName() {
-		return String.format("���� %s��", name);
+		return String.format("던전 %s층", name);
 	}
 
 	public Stack<Enemy> getEnemies() {

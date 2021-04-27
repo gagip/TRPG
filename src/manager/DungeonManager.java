@@ -7,6 +7,11 @@ import java.util.TreeMap;
 
 import enemy.Enemy;
 
+/**
+ * ë˜ì „ ë° ëª¬ìŠ¤í„°ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
+ * @author gagip
+ *
+ */
 public class DungeonManager {
 	private static DungeonManager dm = new DungeonManager();
 	
@@ -14,8 +19,8 @@ public class DungeonManager {
 	
 	
 	private DungeonManager() {
-		// TODO µ¥ÀÌÅÍ º£ÀÌ½º ¸¸µé±â
-		// °¢ Ãş¸¶´Ù ¸ó½ºÅÍµé ¼³Á¤
+		// TODO ëª¬ìŠ¤í„° DB ì—°ë™
+		// ëª¬ìŠ¤í„° íŒŒí‹° ìƒì„±
 		Queue<Enemy> enemy1 = new LinkedList<Enemy>();
 		enemy1.offer(new Enemy(5, 1, 0));
 		enemy1.offer(new Enemy(10, 2, 1));
@@ -25,7 +30,7 @@ public class DungeonManager {
 		enemy2.offer(new Enemy(5, 3, 1));
 		enemy2.offer(new Enemy(10, 2, 1));
 		
-		// ´øÀü¿¡ ¸ó½ºÅÍµé ¹èÄ¡
+		// ë§µì— ëª¬ìŠ¤í„°ë¥¼ ë°°ì¹˜
 		dungeons.put("1", enemy1);
 		dungeons.put("2", enemy2);
 	}
