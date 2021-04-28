@@ -12,6 +12,7 @@ import place.Place;
  */
 public class Player{
 	// 능력치 변수
+	private int lv;
 	private int maxHp;
 	private int hp;
 	private int maxAttack;
@@ -41,11 +42,19 @@ public class Player{
 	}
 	
 	
+	/**
+	 * 장소 이동
+	 * @param place
+	 */
 	public void move(Place place) {
 		this.place = place;
 	}
 	
 	
+	/**
+	 * 몬스터를 공격
+	 * @param enemy
+	 */
 	public void attack(Enemy enemy) {
 		int damage = this.attack = enemy.getDefense();
 		if (damage <= 0) damage = 1;
@@ -78,7 +87,7 @@ public class Player{
 
 	public void setHp(int hp) {
 		this.hp = hp > 0 ? hp : 0;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -89,7 +98,7 @@ public class Player{
 
 	public void setAttack(int attack) {
 		this.attack = attack;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -100,7 +109,7 @@ public class Player{
 
 	public void setDefense(int defense) {
 		this.defense = defense;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -111,7 +120,7 @@ public class Player{
 
 	public void setMoney(int money) {
 		this.money = money > 0 ? money : 0;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -122,7 +131,7 @@ public class Player{
 
 	public void setMaxHp(int maxHp) {
 		this.maxHp = maxHp;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -133,7 +142,7 @@ public class Player{
 
 	public void setMaxAttack(int maxAttack) {
 		this.maxAttack = maxAttack;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 
 
@@ -144,10 +153,14 @@ public class Player{
 
 	public void setMaxDefense(int maxDefense) {
 		this.maxDefense = maxDefense;
-		gm.controllor.setPlayerProperty(this);
+		gm.updateUI();
 	}
 	
 	public Inventory getInven() {
 		return inven;
+	}
+	
+	public String getWhere() {
+		return place.toString();
 	}
 }

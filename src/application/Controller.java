@@ -1,10 +1,14 @@
 package application;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import character.Player;
 import item.Inventory;
+import item.Item;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,48 +33,36 @@ import manager.ScriptManager;
  */
 public class Controller implements Initializable {
 	@FXML private Label timerLbl;
-	@FXML private TextArea gameInfoTxtAr, statTxtAr, inventoryTxtAr;
+	@FXML public TextArea gameInfoTxtAr, statTxtAr, inventoryTxtAr;
 	@FXML private TextField userInputTxtFd;
 	@FXML private Button userInputBtn, startBtn;
 	
-	private static Controller instance = new Controller();
+	private GameManager gm;
+	private Thread timerThread;
 	
-	public static Controller getInstance() {
-		return instance;
-	}
-	
-	Player player;
-   	public static ObjectProperty<Player> playerProperty = new SimpleObjectProperty<Player>(); 
-	public static ObjectProperty<Inventory> invenProperty = new SimpleObjectProperty<Inventory>();
-	public static StringProperty gameInfoProperty = new SimpleStringProperty();
 	
 	public Controller() {
+		// 게임 매니저 세팅
+		this.gm = GameManager.getInstance();
+		GameManager.setController(this);
 	}
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		gameInfoTxtAr.textProperty().bind(gameInfoProperty);
-		statTxtAr.textProperty().bind(playerProperty.asString());
-		inventoryTxtAr.textProperty().bind(invenProperty.asString());
+		gameInfoTxtAr.setText("");
+		statTxtAr.setText("");
+		inventoryTxtAr.setText("");
 		
 		startBtn.setOnAction(new EventHandler<ActionEvent>() {
-			
 			@Override
 			public void handle(ActionEvent arg0) {
-				GameManager.getInstance().start();
+				gm.start();
 			}
 		});
 	}
 	
-	public void setGameInfoProperty(String str) {
-		gameInfoProperty.set(str);
-	}
 	
-	public void setPlayerProperty(Player player) {
-		playerProperty.set(player);
-	}
 	
-	public void setInvenProperty(Inventory inven) {
-		invenProperty.set(inven);
-	}
+	
 }
+

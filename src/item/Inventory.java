@@ -12,6 +12,7 @@ import java.util.Objects;
 public class Inventory {
 	private List<Item> items = new ArrayList<Item>(10);
 	
+	
 	public Inventory() {
 		for (int i=0; i<10; i++)
 			items.add(null);
@@ -25,5 +26,9 @@ public class Inventory {
 			strbuf.append( (i%2)!=0 ? "\n" : "\t" );
 		}
 		return strbuf.toString();
+	}
+	
+	public List<Item> getItems() {
+		return items;
 	}
 }
