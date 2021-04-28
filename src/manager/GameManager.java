@@ -1,5 +1,6 @@
 package manager;
 
+import application.Controller;
 import character.Player;
 
 /**
@@ -9,6 +10,11 @@ import character.Player;
  */
 public class GameManager {
 	private static GameManager gm = new GameManager();
+	
+	public Controller controllor;
+	private ScriptManager sm;
+	private BattleManager bm;
+	
 	
 	// 초기값
 	public static final int DEFAULT_HP = 100;
@@ -20,12 +26,41 @@ public class GameManager {
 	public Player player;
 	
 	private GameManager() {
-		player = new Player(DEFAULT_HP, DEFAULT_ATTACK, DEFAULT_DEFENSE, 1000);
+		
 	}
 	
 	public static GameManager getInstance() {
 		return gm;
 	}
 	
+	private void init() {
+		// 관리자 호출
+		sm = ScriptManager.getInstance();
+		bm = BattleManager.getInstance();
+		
+		// 컨트롤
+		player = new Player(DEFAULT_HP, DEFAULT_ATTACK, DEFAULT_DEFENSE, 1000);
+
+		// UI 컨트롤
+		controllor = Controller.getInstance();
+		controllor.setPlayerProperty(player);
+		controllor.setInvenProperty(player.getInven());
+		
+	}
 	
+	
+	public void start() {
+		// TODO 타이머 시작
+		init();
+		
+		
+		try {
+			
+			Thread.sleep(1000);
+			player.setHp(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

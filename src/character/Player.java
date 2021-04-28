@@ -2,6 +2,7 @@ package character;
 
 import enemy.Enemy;
 import item.Inventory;
+import manager.GameManager;
 import place.Place;
 
 /**
@@ -24,7 +25,7 @@ public class Player{
 	// 참조 변수
 	private Place place;
 	private Inventory inven;
-	
+	private GameManager gm;
 	
 	public Player(int maxHp, int maxAttack, int maxDefense, int money) {
 		this.maxHp = maxHp;
@@ -36,6 +37,7 @@ public class Player{
 		this.money = money;
 		
 		inven = new Inventory();
+		gm = GameManager.getInstance();
 	}
 	
 	
@@ -76,6 +78,7 @@ public class Player{
 
 	public void setHp(int hp) {
 		this.hp = hp > 0 ? hp : 0;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -86,6 +89,7 @@ public class Player{
 
 	public void setAttack(int attack) {
 		this.attack = attack;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -96,6 +100,7 @@ public class Player{
 
 	public void setDefense(int defense) {
 		this.defense = defense;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -106,6 +111,7 @@ public class Player{
 
 	public void setMoney(int money) {
 		this.money = money > 0 ? money : 0;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -116,6 +122,7 @@ public class Player{
 
 	public void setMaxHp(int maxHp) {
 		this.maxHp = maxHp;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -126,6 +133,7 @@ public class Player{
 
 	public void setMaxAttack(int maxAttack) {
 		this.maxAttack = maxAttack;
+		gm.controllor.setPlayerProperty(this);
 	}
 
 
@@ -136,6 +144,7 @@ public class Player{
 
 	public void setMaxDefense(int maxDefense) {
 		this.maxDefense = maxDefense;
+		gm.controllor.setPlayerProperty(this);
 	}
 	
 	public Inventory getInven() {
