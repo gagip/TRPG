@@ -5,7 +5,7 @@ package npc;
  * @author gagip
  *
  */
-public class Store extends Npc {
+public class StoreNpc extends Npc {
 
 	@Override
 	public void talk() {

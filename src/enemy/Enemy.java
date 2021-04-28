@@ -8,6 +8,7 @@ import character.Player;
  *
  */
 public class Enemy {
+	protected String name;
 	protected int maxHp;
 	protected int hp;
 	protected int maxAttack;
@@ -36,6 +37,10 @@ public class Enemy {
 		player.setHp(playerCurHp);
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public int getMaxHp() {
 		return maxHp;

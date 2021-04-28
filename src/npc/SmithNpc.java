@@ -1,11 +1,11 @@
 package npc;
 
 /**
- * 여관 주인 클래스
+ * 대장장이 클래스
  * @author gagip
  *
  */
-public class Inn extends Npc{
+public class SmithNpc extends Npc {
 
 	@Override
 	public void talk() {

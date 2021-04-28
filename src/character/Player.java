@@ -4,6 +4,7 @@ import enemy.Enemy;
 import item.Inventory;
 import manager.GameManager;
 import place.Place;
+import place.Village;
 
 /**
  * 플레이어가 제어하는 클래스
@@ -19,14 +20,16 @@ public class Player{
 	private int attack;
 	private int maxDefense;
 	private int defense;
+	private PlayerState state;
 	
 	// 재화 변수
 	private int money;
 	
 	// 참조 변수
-	private Place place;
+	private Place place = new Village();
 	private Inventory inven;
 	private GameManager gm;
+	
 	
 	public Player(int maxHp, int maxAttack, int maxDefense, int money) {
 		this.maxHp = maxHp;
@@ -160,7 +163,17 @@ public class Player{
 		return inven;
 	}
 	
-	public String getWhere() {
-		return place.toString();
+	public Place getWhere() {
+		return place;
+	}
+
+
+	public PlayerState getState() {
+		return state;
+	}
+
+
+	public void setState(PlayerState state) {
+		this.state = state;
 	}
 }

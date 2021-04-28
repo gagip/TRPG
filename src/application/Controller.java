@@ -1,18 +1,7 @@
 package application;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
-
-import character.Player;
-import item.Inventory;
-import item.Item;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -22,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import manager.GameManager;
-import manager.ScriptManager;
 
 
 
@@ -53,10 +41,21 @@ public class Controller implements Initializable {
 		statTxtAr.setText("");
 		inventoryTxtAr.setText("");
 		
+		
+		
 		startBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				gm.start();
+			}
+		});
+		
+		userInputBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				String str = userInputTxtFd.getText();
+				userInputTxtFd.clear();
+				gm.userInput(str);
 			}
 		});
 	}

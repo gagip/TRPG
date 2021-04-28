@@ -1,15 +1,34 @@
 package place;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 장소 클래스
  * @author gagip
  *
  */
-public abstract class Place {
+public class Place {
 	protected String name;
+	protected String comment;
+	protected List<Place> availablePlace;
 	
-	public String getName() {
+	public Place() {
+		name = "";
+		comment = "";
+		availablePlace = new ArrayList<Place>();
+	}
+	
+	public List<Place> getAvailablePlace(){
+		return availablePlace;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+	
+	@Override
+	public String toString() {
 		return name;
 	}
 }

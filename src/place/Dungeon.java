@@ -16,10 +16,11 @@ public class Dungeon extends Place {
 	public Dungeon(String name, Stack<Enemy> enemies) {
 		this.name = name;
 		this.enemies = enemies;
+		this.comment = "무서운 던전이군요\n";
 	}
 	
 	@Override
-	public String getName() {
+	public String toString() {
 		return String.format("던전 %s층", name);
 	}
 
