@@ -1,5 +1,7 @@
 package enemy;
 
+import java.lang.annotation.Inherited;
+
 import character.Player;
 import manager.DungeonManager;
 import place.Dungeon;
@@ -11,27 +13,24 @@ import place.Dungeon;
  */
 public class Enemy {
 	protected String name;
+	protected String passiveDescription;
 	protected int maxHp;
 	protected int hp;
-	protected int maxAttack;
 	protected int attack;
-	protected int maxDefense;
 	protected int defense;
-	protected int money;
-	protected int exp;
+	protected int gold;
 	
 	
-	public Enemy(int maxHp, int maxAttack, int maxDefense, int money, int exp) {
+	
+	public Enemy(int maxHp, int attack, int defense, int gold) {
 		this.name = "적";
 		this.maxHp = maxHp;
 		this.hp = maxHp;
-		this.maxAttack = maxAttack;
-		this.attack = maxAttack;
-		this.maxDefense = maxDefense;
-		this.defense = maxDefense;
-		this.money = money;
-		this.exp = exp;
+		this.attack = attack;
+		this.defense = defense;
+		this.gold = gold;
 	}
+	
 	
 	
 	public void attack(Player player) {
@@ -44,15 +43,20 @@ public class Enemy {
 		player.setHp(playerCurHp);
 	}
 
+	
 	public void die(Dungeon floor) {
 		DungeonManager.getInstance().removeEnemy(floor);;
 	}
+	
+	public void passive(Player player) {}
+	
 	
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	
 	public int getMaxHp() {
 		return maxHp;
 	}
@@ -69,17 +73,12 @@ public class Enemy {
 
 
 	public void setHp(int hp) {
-		this.hp = hp > 0 ? hp : 0;
-	}
-
-
-	public int getMaxAttack() {
-		return maxAttack;
-	}
-
-
-	public void setMaxAttack(int maxAttack) {
-		this.maxAttack = maxAttack;
+		if (hp > getMaxHp())
+			this.hp = getMaxHp();
+		else if (hp > 0)
+			this.hp = hp;
+		else
+			this.hp = 0;
 	}
 
 
@@ -93,16 +92,6 @@ public class Enemy {
 	}
 
 
-	public int getMaxDefense() {
-		return maxDefense;
-	}
-
-
-	public void setMaxDefense(int maxDefense) {
-		this.maxDefense = maxDefense;
-	}
-
-
 	public int getDefense() {
 		return defense;
 	}
@@ -112,12 +101,13 @@ public class Enemy {
 		this.defense = defense;
 	}
 	
-	public int getMoney() {
-		return money;
+	public int getGold() {
+		return gold;
 	}
 	
-	public int getExp() {
-		return exp;
+	public String getPassiveDescription() {
+		return passiveDescription;
 	}
+	
 	
 }

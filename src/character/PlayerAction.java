@@ -3,7 +3,7 @@ package character;
 public enum PlayerAction {
 	IDLE,
 	MOVE,
-	EQUIP, USE,
+	INVEN,
 	BATTLE, RETEAT,
 	BUY, SELL, REST,
 }

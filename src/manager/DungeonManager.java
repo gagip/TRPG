@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import enemy.Bat;
 import enemy.Enemy;
+import enemy.Goblin;
 import place.Dungeon;
 import place.Place;
 
@@ -29,13 +31,13 @@ public class DungeonManager {
 		// TODO 몬스터 DB 연동		
 		// 몬스터 파티 생성
 		Queue<Enemy> enemy1 = new LinkedList<Enemy>();
-		enemy1.offer(new Enemy(5, 1, 0, 100, 10));
-		enemy1.offer(new Enemy(10, 2, 1, 50, 10));
-		enemy1.offer(new Enemy(15, 2, 1, 100, 10));
+		enemy1.offer(new Bat(5, 1, 0, 50));
+		enemy1.offer(new Bat(7, 2, 1, 100));
+		enemy1.offer(new Bat(15, 2, 1, 100));
 		Queue<Enemy> enemy2 = new LinkedList<Enemy>();
-		enemy2.offer(new Enemy(10, 1, 0, 100, 10));
-		enemy2.offer(new Enemy(5, 3, 1, 100, 10));
-		enemy2.offer(new Enemy(10, 2, 1, 100, 10));
+		enemy2.offer(new Bat(10, 3, 0, 100));
+		enemy2.offer(new Goblin(20, 3, 1, 200));
+		enemy2.offer(new Goblin(30, 5, 2, 300));
 		
 		Dungeon dungeon1 = new Dungeon("던전 1층", enemy1);
 		Dungeon dungeon2 = new Dungeon("던전 2층", enemy2);

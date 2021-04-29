@@ -1,19 +1,15 @@
 package manager;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import character.Player;
 import character.PlayerAction;
-import character.PlayerState;
 import enemy.Enemy;
+import item.Item;
+import item.consumption.IConsumption;
+import item.equipment.IEquipment;
 import javafx.application.Platform;
-import javafx.print.PrintColor;
-import place.Dungeon;
 import place.Place;
-import place.Village;
-
 
 
 /**
@@ -45,6 +41,7 @@ public class ScriptManager {
 	public <T> String printChoice(List<T> t) {
 		StringBuffer strBuf = new StringBuffer();
 		for (int i=0; i<t.size(); i++) {
+			if (t.get(i) == null) continue;
 			strBuf.append(String.format("[%d] %s ", i, t.get(i).toString()));
 		}
 		strBuf.append("\n");
@@ -56,9 +53,10 @@ public class ScriptManager {
 		gm.printGameInfo("안녕하세요. TRPG에 오신 여러분을 환영합니다.\n");
 	}
 	
-	public void printBattle(Player player, Enemy enemy) {
+	public void printBattle(Player player, Enemy enemy, int turn) {
 		StringBuffer strBuf = new StringBuffer();
 		
+		strBuf.append(String.format("----------%d번째 턴--------\n", turn));
 		strBuf.append(String.format(
 									"player               enemy\n"
 									+ "%d      현재체력       %d\n"
@@ -76,5 +74,13 @@ public class ScriptManager {
 		gm.printGameInfo("아무키나 입력해주세요\n");
 		gm.printGameInfo("\n\n\n");
 	}
-
+	
+	public void usedItem(Item item) {
+		if (item instanceof IEquipment) {
+			gm.printGameInfo(String.format("%s(을)를 장착하였습니다.\n", item));
+		}
+		else if (item instanceof IConsumption) {
+			gm.printGameInfo(String.format("%s(을)를 사용하였습니다.\n", item));
+		}
+	}
 }

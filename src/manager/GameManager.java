@@ -12,6 +12,8 @@ import character.PlayerState;
 import enemy.Enemy;
 import item.Inventory;
 import item.Item;
+import item.consumption.IConsumption;
+import item.equipment.IEquipment;
 import npc.Npc;
 import place.Dungeon;
 import place.Inn;
@@ -38,8 +40,8 @@ public class GameManager {
 	
 	
 	// 초기값
-	public static final int DEFAULT_HP = 100;
-	public static final int DEFAULT_ATTACK = 10;
+	public static final int DEFAULT_HP = 50;
+	public static final int DEFAULT_ATTACK = 3;
 	public static final int DEFAULT_DEFENSE = 1;
 	public static final float DEFAULT_BATTLE_TIME = 1f;
 	public static final float DEFAULT_TIMER = 3f;
@@ -85,15 +87,12 @@ public class GameManager {
 	public void win(Player player, Enemy enemy) {
 		StringBuffer strbuf = new StringBuffer();
 		
-		int money = player.getMoney();
-		money += enemy.getMoney();
-		player.setMoney(money);
-		strbuf.append(String.format("돈: +%d\n", enemy.getMoney()));
+		int gold = player.getGold();
+		gold += enemy.getGold();
+		player.setGold(gold);
+		strbuf.append(String.format("돈: +%d\n", enemy.getGold()));
 		
-		int exp = player.getExp();
-		exp += enemy.getExp();
-		player.setExp(exp);
-		strbuf.append(String.format("경험치: +%d\n", enemy.getExp()));
+		
 		
 		enemy.die((Dungeon) player.getWhere());
 		
@@ -104,7 +103,7 @@ public class GameManager {
 		// 캐릭터 마을로
 		player.setWhere(pm.village);
 		player.setHp(player.getMaxHp());
-		player.setMoney(player.getMoney() - 1000);
+		player.setGold(player.getGold() - 1000);
 		// TODO 타이머 차감
 	}
 	
@@ -125,8 +124,7 @@ public class GameManager {
 		possibleActions.clear();
 		// 일반적인 행동 정의
 		possibleActions.add(PlayerAction.MOVE);
-		possibleActions.add(PlayerAction.EQUIP);
-		possibleActions.add(PlayerAction.USE);
+		possibleActions.add(PlayerAction.INVEN);
 		
 		// 장소, 상태에 따른 행동 정의
 		if (place instanceof Itrade) {
@@ -157,8 +155,7 @@ public class GameManager {
 		case IDLE:
 			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
 			else if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
-			else if (curAction == PlayerAction.EQUIP ||
-					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
+			else if (curAction == PlayerAction.INVEN)	curState = PlayerState.SEARCH;
 			else if (curAction == PlayerAction.BUY ||
 					curAction == PlayerAction.SELL)		curState = PlayerState.TRADE;
 			break;
@@ -177,15 +174,13 @@ public class GameManager {
 			
 		case CONTECT_ENEMY:
 			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
-			else if (curAction == PlayerAction.EQUIP ||
-					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
+			else if (curAction == PlayerAction.INVEN)	curState = PlayerState.SEARCH;
 			else if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
 			break;
 			
 		case CONTECT_NPC:
 			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
-			else if (curAction == PlayerAction.EQUIP ||
-					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
+			else if (curAction == PlayerAction.INVEN)	curState = PlayerState.SEARCH;
 			else if (curAction == PlayerAction.BUY ||
 					curAction == PlayerAction.SELL ||
 					curAction == PlayerAction.REST)		curState = PlayerState.TRADE;
@@ -206,6 +201,11 @@ public class GameManager {
 					place instanceof Store) {
 				curState = PlayerState.CONTECT_NPC;
 			}
+			break;
+		case SEARCH:
+			curState = PlayerState.IDLE;
+			break;
+		case TRADE:
 			break;
 		default:
 			break;
@@ -241,7 +241,7 @@ public class GameManager {
 				, player.getWhere().toString()
 				, player.getHp(), player.getMaxHp()
 				, player.getAttack()
-				, player.getDefense(), player.getMoney()
+				, player.getDefense(), player.getGold()
 				, curAction.toString(), curState.toString()
 		));
 	}
@@ -295,14 +295,14 @@ public class GameManager {
 						+ "공격력: %d\n"
 						+ "방어력: %d\n"
 						+ "획득 골드: %d\n"
-						+ "획득 경험치: %d\n"
+						+ "패시브: %s\n"
 						+ "-----------------\n" 
 						, enemy
 						, enemy.getHp()
 						, enemy.getAttack()
 						, enemy.getDefense()
-						, enemy.getMoney()
-						, enemy.getExp()
+						, enemy.getGold()
+						, enemy.getPassiveDescription()
 				));
 				strBuf.append("어떤 행동을 하시겠습니까?\n");
 				strBuf.append(script.printChoice(getPossibleActions()));
@@ -312,6 +312,11 @@ public class GameManager {
 			break;
 		case BATTLE:
 			//
+			break;
+		case SEARCH:
+			strBuf.append("어떤 아이템을 사용하실껀가요?\n");
+			strBuf.append(script.printChoice(player.getInven().getItems()));
+			strBuf.append("사용하실 아이템이 없다면 아무 숫자를 입력하세요\n");
 			break;
 		default:
 			break;
@@ -346,13 +351,16 @@ public class GameManager {
 	private void excuteAction(int choice) {
 		Place place = player.getWhere();
 		
-		// 액션 실행 이전에 예외처리
-		if (curState != PlayerState.MOVE)
-			curAction = choice(getPossibleActions(), choice);
-		else if (curState == PlayerState.BATTLE)
+		// 액션 실행 이전에 예외처리 (다른 선택지 제공)
+		if (curState == PlayerState.BATTLE)
 			curAction = PlayerAction.IDLE;
-		else
+		else if (curState == PlayerState.SEARCH)
+			curAction = PlayerAction.INVEN;
+		else if (curState == PlayerState.MOVE)
 			curAction = PlayerAction.MOVE;
+		else
+			curAction = choice(getPossibleActions(), choice);
+			
 		
 		switch (curAction) {
 		case IDLE:
@@ -377,6 +385,24 @@ public class GameManager {
 				
 			}
 			
+			break;
+			
+		case INVEN:
+			if (curState == PlayerState.SEARCH) {
+				Inventory inven = player.getInven();
+				Item item = choice(inven.getItems(), choice);
+				if (item instanceof IConsumption) {
+					IConsumption consumption = (IConsumption) item;
+					
+					player.use(consumption);
+					script.usedItem(item);
+				} else if (item instanceof IEquipment) {
+					IEquipment equipment = (IEquipment) item;
+					
+					player.equip(equipment);
+					script.usedItem(item);
+				}
+			}
 			break;
 		default:
 			break;

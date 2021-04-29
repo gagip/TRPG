@@ -1,10 +1,15 @@
 package character;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import enemy.Enemy;
 import item.Inventory;
+import item.Item;
+import item.consumption.IConsumption;
+import item.equipment.IEquipment;
 import manager.GameManager;
 import place.Place;
-import place.Village;
 
 /**
  * 플레이어가 제어하는 클래스
@@ -13,8 +18,6 @@ import place.Village;
  */
 public class Player{
 	// 능력치 변수
-	private int lv;
-	private int exp;
 	private int maxHp;
 	private int hp;
 	private int attack;
@@ -22,24 +25,26 @@ public class Player{
 	private PlayerState state;
 	
 	// 재화 변수
-	private int money;
+	private int gold;
 	
 	// 참조 변수
 	private Place place;
 	private Inventory inven;
-	private GameManager gm;
 	public Object connect;
 	
-	
-	public Player(int maxHp, int attack, int defense, int money) {
+	// 머리, 옷, 무기
+	private List<IEquipment> equipments = new ArrayList<IEquipment>(3);
+
+	public Player(int maxHp, int attack, int defense, int gold) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;
 		this.attack = attack;
 		this.defense = defense;
-		this.money = money;
+		this.gold = gold;
 		
 		inven = new Inventory();
-		gm = GameManager.getInstance();
+		for (int i=0; i<3; i++)
+			equipments.add(null);
 	}
 	
 	
@@ -52,12 +57,13 @@ public class Player{
 	}
 	
 	
+	
 	/**
 	 * 몬스터를 공격
 	 * @param enemy
 	 */
 	public void attack(Enemy enemy) {
-		int damage = this.attack = enemy.getDefense();
+		int damage = this.attack - enemy.getDefense();
 		if (damage <= 0) damage = 1;
 		
 		int enemyCurHp = enemy.getHp();
@@ -66,18 +72,17 @@ public class Player{
 		enemy.setHp(enemyCurHp);
 	}
 
-
-	@Override
-	public String toString() {
-		return String.format(
-				"체력: %d/%d\n"
-				+ "공격력: %d\n"
-				+ "방어력: %d\n"
-				+ "돈: %d"
-				, hp, maxHp
-				, attack
-				, defense
-				, money);
+	
+	public void equip(IEquipment equipment) {
+		equipment.equip(this);
+	}
+	
+	public void unequip(IEquipment equipment) {
+		equipment.unEquip(this);
+	}
+	
+	public void use(IConsumption consumption) {
+		consumption.use(this);
 	}
 	
 	
@@ -87,8 +92,12 @@ public class Player{
 
 
 	public void setHp(int hp) {
-		this.hp = hp > 0 ? hp : 0;
-		gm.updateUI();
+		if (hp > getMaxHp())
+			this.hp = getMaxHp();
+		else if (hp > 0)
+			this.hp = hp;
+		else
+			this.hp = 0;
 	}
 
 
@@ -99,7 +108,6 @@ public class Player{
 
 	public void setAttack(int attack) {
 		this.attack = attack;
-		gm.updateUI();
 	}
 
 
@@ -110,18 +118,16 @@ public class Player{
 
 	public void setDefense(int defense) {
 		this.defense = defense;
-		gm.updateUI();
 	}
 
 
-	public int getMoney() {
-		return money;
+	public int getGold() {
+		return gold;
 	}
 
 
-	public void setMoney(int money) {
-		this.money = money > 0 ? money : 0;
-		gm.updateUI();
+	public void setGold(int gold) {
+		this.gold = gold > 0 ? gold : 0;
 	}
 
 
@@ -132,13 +138,13 @@ public class Player{
 
 	public void setMaxHp(int maxHp) {
 		this.maxHp = maxHp;
-		gm.updateUI();
 	}
 
 	
 	public Inventory getInven() {
 		return inven;
 	}
+	
 	
 	public Place getWhere() {
 		return place;
@@ -154,17 +160,18 @@ public class Player{
 		this.state = state;
 	}
 	
+	
 	public void setWhere(Place place) {
 		this.place = place;
 	}
 	
-	public int getExp() {
-		return exp;
-	}
-
-	public void setExp(int exp) {
-		// TODO 레벨업
-		this.exp = exp;
+	
+	public void setEquipment(int idx, IEquipment equipment) {
+		equipments.set(idx, equipment);
 	}
 	
+	
+	public List<IEquipment> getEquipment() {
+		return equipments;
+	}
 }

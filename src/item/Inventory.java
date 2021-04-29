@@ -17,6 +17,8 @@ public class Inventory {
 		for (int i=0; i<10; i++)
 			items.add(null);
 	}
+	
+	
 	@Override
 	public String toString() {
 		StringBuffer strbuf = new StringBuffer();
@@ -26,6 +28,10 @@ public class Inventory {
 			strbuf.append( (i%2)!=0 ? "\n" : "\t" );
 		}
 		return strbuf.toString();
+	}
+	
+	public Item getItem(int idx) {
+		return items.get(idx);
 	}
 	
 	public List<Item> getItems() {
