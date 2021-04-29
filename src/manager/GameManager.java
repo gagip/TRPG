@@ -3,13 +3,17 @@ package manager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 
 import application.Controller;
 import character.Player;
 import character.PlayerAction;
 import character.PlayerState;
+import enemy.Enemy;
 import item.Inventory;
 import item.Item;
+import place.Dungeon;
+import place.Inn;
 import place.Itrade;
 import place.Place;
 import place.Smith;
@@ -25,8 +29,10 @@ public class GameManager {
 	private static GameManager gm = new GameManager();
 	
 	public static Controller controllor;
+	private DungeonManager dm;
 	private ScriptManager script;
 	private BattleManager bm;
+	private PlaceManager pm;
 	
 	
 	// 초기값
@@ -52,11 +58,17 @@ public class GameManager {
 	private void init() {
 		// 관리자 호출
 		script = ScriptManager.getInstance();
+		dm = DungeonManager.getInstance();
 		bm = BattleManager.getInstance();
+		pm = PlaceManager.getInstance();
+		
+		pm.init();
 		
 		// 플레이어 생성
 		player = new Player(DEFAULT_HP, DEFAULT_ATTACK, DEFAULT_DEFENSE, 1000);
-		setPossibleActions(player.getWhere(), curState);
+		player.setWhere(pm.village);
+		changePossibleActions(player.getWhere(), curState);
+		
 		updateUI();
 	}
 	
@@ -80,16 +92,20 @@ public class GameManager {
 	/**
 	 * 장소 및 상태에 따른 플레이어 액션 정의
 	 */
-	private void setPossibleActions(Place place, PlayerState state) {
+	private void changePossibleActions(Place place, PlayerState state) {
 		possibleActions.clear();
+		// 일반적인 행동 정의
 		possibleActions.add(PlayerAction.MOVE);
 		possibleActions.add(PlayerAction.EQUIP);
 		possibleActions.add(PlayerAction.USE);
 		
+		// 장소에 따른 행동 정의
 		if (place instanceof Itrade) {
 			possibleActions.add(PlayerAction.BUY);
 			possibleActions.add(PlayerAction.SELL);
-		} else {
+		} else if (place instanceof Inn) {
+			possibleActions.add(PlayerAction.REST);
+		} else if (place instanceof Dungeon){
 			switch (state) {
 			case BATTLE:
 				possibleActions.add(PlayerAction.RETEAT);
@@ -100,6 +116,38 @@ public class GameManager {
 			default:
 				break;
 			}
+		}
+	}
+	
+	private void changeState() {
+		// 상태를 변화시키는 변수들 추출
+		Place place = player.getWhere();
+		
+		// 가진 정보들을 종합하여 상태 결정
+		switch (curState) {
+		case IDLE:
+			if (place instanceof Dungeon) {
+				// 몬스터를 만나면
+				Dungeon dungeon = (Dungeon) place;
+				Enemy enemy = dungeon.getMonster();
+				if (enemy != null) 		curState = PlayerState.CONTECT;
+			} 
+			break;
+		case BATTLE:
+			curState = PlayerState.IDLE;
+			break;
+		case CONTECT:
+			if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
+			else if (curAction == PlayerAction.BUY ||
+					curAction == PlayerAction.SELL)	curState = PlayerState.TRADE;
+			else 									curState = PlayerState.IDLE;
+			break;
+			
+		case TRADE:
+			curState = PlayerState.IDLE;
+			break;
+		default:
+			break;
 		}
 	}
 	
@@ -123,12 +171,12 @@ public class GameManager {
 				+ "체력: %d/%d\n"
 				+ "공격력: %d\n"
 				+ "방어력: %d\t돈: %d\n"
-				+ "현재 행동: %s"
+				+ "현재 행동: %s\t현재 상태: %s"
 				, player.getWhere().toString()
 				, player.getHp(), player.getMaxHp()
 				, player.getAttack()
 				, player.getDefense(), player.getMoney()
-				, curAction.toString()
+				, curAction.toString(), curState.toString()
 		));
 	}
 	
@@ -171,7 +219,14 @@ public class GameManager {
 			break;
 		case MOVE:
 			strBuf.append("어디로 이동 하시겠습니까?\n");
-			strBuf.append(script.printChoice(getAvailablePlace()));
+			if (player.getWhere() instanceof Dungeon) {
+				strBuf.append(script.printChoice(dm.getDungeons()));
+			} else {
+				strBuf.append(script.printChoice(getAvailablePlace()));
+			}
+			
+		case BATTLE:
+			break;
 		default:
 			break;
 		}
@@ -190,26 +245,62 @@ public class GameManager {
 	 * @param choice
 	 */
 	private void excuteAction(PlayerAction action, PlayerState state, int choice) {
+		Place place = player.getWhere();
 		switch (action) {
 		case IDLE:
 			curAction = choice(possibleActions, choice);
-			
 			script.idle(curAction);
-			beforeAction(curAction, state);
 			break;
 		case MOVE:
-			Place toPlace = choice(getAvailablePlace(), choice);
-			player.move(toPlace);
-			script.move(player.getWhere());
-			curAction = PlayerAction.IDLE;
-			setPossibleActions(toPlace, state);
-			beforeAction(curAction, state);
+			// 던전이라면 몇 층으로 갈지 선택지 제공
+			if (place instanceof Dungeon) {
+				
+				if (place.toString().equals("던전 입구")) {
+					
+				}
+				// 해당 장소로 이동
+				Place toPlace = choice(dm.getDungeons(), choice);
+				player.move(toPlace);
+				script.move(player.getWhere());
+				
+				if (toPlace instanceof Dungeon) {
+					// 적이 있으면 행동 재설정
+					Dungeon dungeon = (Dungeon) toPlace;
+					
+					if (dungeon.getEnemies().size() > 0) {
+						curAction = PlayerAction.IDLE;
+					}
+				} else {
+					player.move(toPlace);
+					script.move(player.getWhere());
+				}
+				
+				
+			} else {
+				// 해당 장소로 이동
+				Place toPlace = choice(getAvailablePlace(), choice);
+				player.move(toPlace);
+				script.move(player.getWhere());
+				
+				if (toPlace instanceof Dungeon) {
+					
+				} else {
+					// IDLE 상태로 변환 후 선택지
+					curAction = PlayerAction.IDLE;
+					
+				}
+			}
+			
 			break;
 		default:
 			break;
 		}
 		
+		
+		changeState();
+		changePossibleActions(player.getWhere(), state);
 		updateUI();
+		beforeAction(curAction, state);
 	}
 	
 

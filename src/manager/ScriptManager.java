@@ -1,6 +1,8 @@
 package manager;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import character.PlayerAction;
 import character.PlayerState;
@@ -28,15 +30,14 @@ public class ScriptManager {
 	}
 	
 	public void idle(PlayerAction action) {
-		gm.printGameInfo(String.format("%s(을)를 선택\n", action));
+		gm.printGameInfo(String.format("%s(을)를 선택\n\n\n", action));
 	}
 	
 	public void move(Place place) {
-		gm.printGameInfo(String.format("플레이어 %s(으)로 이동\n", place));
+		gm.printGameInfo(String.format("플레이어 %s(으)로 이동\n\n\n", place));
 		gm.printGameInfo(place.getComment());
 	}
 	
-
 	
 	public <T> String printChoice(List<T> t) {
 		StringBuffer strBuf = new StringBuffer();

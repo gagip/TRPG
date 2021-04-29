@@ -1,5 +1,7 @@
 package place;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 import enemy.Enemy;
@@ -11,22 +13,33 @@ import enemy.Enemy;
  */
 public class Dungeon extends Place {
 	
-	private Stack<Enemy> enemies = new Stack<Enemy>();
+	private Queue<Enemy> enemies = new LinkedList<Enemy>();
+	private boolean isClear = false;
 	
-	public Dungeon(String name, Stack<Enemy> enemies) {
+	// 임시 던전
+	public Dungeon() {
+		this.name = "던전 입구";
+	}
+	
+	public Dungeon(String name, Queue<Enemy> enemies) {
 		this.name = name;
 		this.enemies = enemies;
 		this.comment = "무서운 던전이군요\n";
 	}
 	
+	public Enemy getMonster() {
+		if (enemies.size() > 0)
+			return enemies.peek();
+		else
+			return null;
+	}
+	
 	@Override
 	public String toString() {
-		return String.format("던전 %s층", name);
+		return name;
 	}
 
-	public Stack<Enemy> getEnemies() {
+	public Queue<Enemy> getEnemies() {
 		return enemies;
 	}
-
-	
 }

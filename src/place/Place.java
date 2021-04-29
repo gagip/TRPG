@@ -11,7 +11,7 @@ import java.util.List;
 public class Place {
 	protected String name;
 	protected String comment;
-	protected List<Place> availablePlace;
+	public List<Place> availablePlace;
 	
 	public Place() {
 		name = "";

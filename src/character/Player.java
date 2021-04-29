@@ -26,7 +26,7 @@ public class Player{
 	private int money;
 	
 	// 참조 변수
-	private Place place = new Village();
+	private Place place;
 	private Inventory inven;
 	private GameManager gm;
 	
@@ -175,5 +175,9 @@ public class Player{
 
 	public void setState(PlayerState state) {
 		this.state = state;
+	}
+	
+	public void setWhere(Place place) {
+		this.place = place;
 	}
 }
