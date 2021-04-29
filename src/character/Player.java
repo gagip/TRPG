@@ -14,11 +14,10 @@ import place.Village;
 public class Player{
 	// 능력치 변수
 	private int lv;
+	private int exp;
 	private int maxHp;
 	private int hp;
-	private int maxAttack;
 	private int attack;
-	private int maxDefense;
 	private int defense;
 	private PlayerState state;
 	
@@ -32,13 +31,11 @@ public class Player{
 	public Object connect;
 	
 	
-	public Player(int maxHp, int maxAttack, int maxDefense, int money) {
+	public Player(int maxHp, int attack, int defense, int money) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;
-		this.maxAttack = maxAttack;
-		this.attack = maxAttack;
-		this.maxDefense = maxDefense;
-		this.defense = maxDefense;
+		this.attack = attack;
+		this.defense = defense;
 		this.money = money;
 		
 		inven = new Inventory();
@@ -138,27 +135,6 @@ public class Player{
 		gm.updateUI();
 	}
 
-
-	public int getMaxAttack() {
-		return maxAttack;
-	}
-
-
-	public void setMaxAttack(int maxAttack) {
-		this.maxAttack = maxAttack;
-		gm.updateUI();
-	}
-
-
-	public int getMaxDefense() {
-		return maxDefense;
-	}
-
-
-	public void setMaxDefense(int maxDefense) {
-		this.maxDefense = maxDefense;
-		gm.updateUI();
-	}
 	
 	public Inventory getInven() {
 		return inven;
@@ -180,6 +156,15 @@ public class Player{
 	
 	public void setWhere(Place place) {
 		this.place = place;
+	}
+	
+	public int getExp() {
+		return exp;
+	}
+
+	public void setExp(int exp) {
+		// TODO 레벨업
+		this.exp = exp;
 	}
 	
 }

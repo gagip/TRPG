@@ -71,5 +71,10 @@ public class ScriptManager {
 		
 		Platform.runLater(() -> gm.printGameInfo(strBuf.toString()));
 	}
+	
+	public void endBattle() {
+		gm.printGameInfo("아무키나 입력해주세요\n");
+		gm.printGameInfo("\n\n\n");
+	}
 
 }

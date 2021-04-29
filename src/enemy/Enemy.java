@@ -15,15 +15,19 @@ public class Enemy {
 	protected int attack;
 	protected int maxDefense;
 	protected int defense;
+	protected int money;
+	protected int exp;
 	
 	
-	public Enemy(int maxHp, int maxAttack, int maxDefense) {
+	public Enemy(int maxHp, int maxAttack, int maxDefense, int money, int exp) {
 		this.maxHp = maxHp;
 		this.hp = maxHp;
 		this.maxAttack = maxAttack;
 		this.attack = maxAttack;
 		this.maxDefense = maxDefense;
 		this.defense = maxDefense;
+		this.money = money;
+		this.exp = exp;
 	}
 	
 	
@@ -100,4 +104,13 @@ public class Enemy {
 	public void setDefense(int defense) {
 		this.defense = defense;
 	}
+	
+	public int getMoney() {
+		return money;
+	}
+	
+	public int getExp() {
+		return exp;
+	}
+	
 }

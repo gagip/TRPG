@@ -1,6 +1,7 @@
 package manager;
 
 import character.Player;
+import character.PlayerState;
 import enemy.Enemy;
 import javafx.application.Platform;
 import place.Smith;
@@ -18,7 +19,6 @@ public class BattleManager {
 	private static final int BATTLE_TIME = 1000;
 	
 	public boolean isBattle = false;
-	public boolean isPrint = true;
 	
 	private BattleManager() {
 		gm = GameManager.getInstance();
@@ -44,8 +44,8 @@ public class BattleManager {
 					
 					// 체력 검사 -> 조건 만족 시 전투 종료
 					if (player.getHp() <= 0 || enemy.getHp() <= 0) {
-						if (player.getHp() <= 0)		endBattle(player);
-						else 							endBattle(enemy);
+						if (player.getHp() <= 0)		endBattle(enemy, player);
+						else 							endBattle(player, enemy);
 						
 						isBattle = false;
 					}
@@ -58,15 +58,30 @@ public class BattleManager {
 				
 		}
 		});
+		
 		thread.start();
 	}
 	
 	
-	public <T> void endBattle(T t) {
-		if (t instanceof Player) {
+	public <W, L> void endBattle(W winner, L loser) {
+		if (winner instanceof Player) {
 			// 보상 획득
+			if (loser instanceof Enemy) {
+				gm.printGameInfo("전투에서 승리하셨습니다.\n");
+				Player player = (Player) winner;
+				Enemy enemy = (Enemy) loser;
+				gm.win(player, enemy);
+				
+			}
+			
 		} else {
 			// 플레이어 패배
+			gm.printGameInfo("전투에서 패배하셨습니다. \n");
+			gm.defeat();
+			
 		}
+		script.endBattle();
 	}
+	
+	
 }

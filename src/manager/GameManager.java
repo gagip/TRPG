@@ -47,7 +47,7 @@ public class GameManager {
 
 	private List<PlayerAction> possibleActions = new ArrayList<PlayerAction>();
 	private PlayerAction curAction = PlayerAction.IDLE; 
-	private PlayerState curState = PlayerState.IDLE;
+	private PlayerState curState = PlayerState.INIT;
 	public boolean canInput = false;
 	
 	private GameManager() {}
@@ -80,6 +80,31 @@ public class GameManager {
 		script.startScene();
 		beforeAction(curAction, curState);
 	}
+	
+	public void win(Player player, Enemy enemy) {
+		StringBuffer strbuf = new StringBuffer();
+		
+		int money = player.getMoney();
+		money += enemy.getMoney();
+		player.setMoney(money);
+		strbuf.append(String.format("돈: +%d\n", enemy.getMoney()));
+		
+		int exp = player.getExp();
+		exp += enemy.getExp();
+		player.setExp(exp);
+		strbuf.append(String.format("경험치: +%d\n", enemy.getExp()));
+		
+		printGameInfo(strbuf.toString());
+	}
+	
+	public void defeat() {
+		// 캐릭터 마을로
+		player.setWhere(pm.village);
+		player.setHp(player.getMaxHp());
+		player.setMoney(player.getMoney() - 1000);
+		// TODO 타이머 차감
+	}
+	
 	
 	public List<Place> getAvailablePlace() {
 		Place place = player.getWhere();
@@ -126,6 +151,9 @@ public class GameManager {
 		
 		// 가진 정보들을 종합하여 상태 결정
 		switch (curState) {
+		case INIT:
+			curState = PlayerState.IDLE;
+			break;
 		case IDLE:
 			if (place instanceof Dungeon) {
 				// 몬스터를 만나면
@@ -135,7 +163,14 @@ public class GameManager {
 			} 
 			break;
 		case BATTLE:
-			curState = PlayerState.IDLE;
+			if (place instanceof Dungeon) {
+				// 몬스터를 만나면
+				Dungeon dungeon = (Dungeon) place;
+				Enemy enemy = dungeon.getMonster();
+				if (enemy != null) 		curState = PlayerState.CONTECT;
+			} else {
+				curState = PlayerState.IDLE;
+			}
 			break;
 		case CONTECT:
 			if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
@@ -220,6 +255,7 @@ public class GameManager {
 		switch (action) {
 		case IDLE:
 			switch (curState) {
+			case INIT:
 			case IDLE:
 				strBuf.append("어떤 행동을 하시겠습니까?\n");
 				strBuf.append(script.printChoice(getPossibleActions()));
@@ -257,7 +293,7 @@ public class GameManager {
 		default:
 			break;
 		}
-
+	
 		// 입력 가능
 		canInput = true;
 		printGameInfo(strBuf.toString());
@@ -275,8 +311,17 @@ public class GameManager {
 		Place place = player.getWhere();
 		switch (action) {
 		case IDLE:
-			curAction = choice(possibleActions, choice);
-			script.idle(curAction);
+			switch (state) {
+			case IDLE:
+				
+				break;
+
+			default:
+				curAction = choice(possibleActions, choice);
+				script.idle(curAction);
+				break;
+			}
+			
 			break;
 		case MOVE:
 			// 던전이라면 몇 층으로 갈지 선택지 제공
@@ -327,8 +372,6 @@ public class GameManager {
 				
 				battle(player, enemy);
 			}
-			
-			
 			break;
 		default:
 			break;

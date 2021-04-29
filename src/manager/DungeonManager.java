@@ -29,13 +29,13 @@ public class DungeonManager {
 		// TODO 몬스터 DB 연동		
 		// 몬스터 파티 생성
 		Queue<Enemy> enemy1 = new LinkedList<Enemy>();
-		enemy1.offer(new Enemy(5, 1, 0));
-		enemy1.offer(new Enemy(10, 2, 1));
-		enemy1.offer(new Enemy(15, 2, 1));
+		enemy1.offer(new Enemy(5, 1, 0, 100, 10));
+		enemy1.offer(new Enemy(10, 2, 1, 50, 10));
+		enemy1.offer(new Enemy(15, 2, 1, 100, 10));
 		Queue<Enemy> enemy2 = new LinkedList<Enemy>();
-		enemy2.offer(new Enemy(10, 1, 0));
-		enemy2.offer(new Enemy(5, 3, 1));
-		enemy2.offer(new Enemy(10, 2, 1));
+		enemy2.offer(new Enemy(10, 1, 0, 100, 10));
+		enemy2.offer(new Enemy(5, 3, 1, 100, 10));
+		enemy2.offer(new Enemy(10, 2, 1, 100, 10));
 		
 		Dungeon dungeon1 = new Dungeon("던전 1층", enemy1);
 		Dungeon dungeon2 = new Dungeon("던전 2층", enemy2);
