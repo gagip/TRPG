@@ -12,6 +12,7 @@ import character.PlayerState;
 import enemy.Enemy;
 import item.Inventory;
 import item.Item;
+import npc.Npc;
 import place.Dungeon;
 import place.Inn;
 import place.Itrade;
@@ -140,7 +141,6 @@ public class GameManager {
 			if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
 			else if (curAction == PlayerAction.BUY ||
 					curAction == PlayerAction.SELL)	curState = PlayerState.TRADE;
-			else 									curState = PlayerState.IDLE;
 			break;
 			
 		case TRADE:
@@ -149,6 +149,10 @@ public class GameManager {
 		default:
 			break;
 		}
+	}
+	
+	private void battle(Player player, Enemy enemy) {
+		bm.startBattle(player, enemy);
 	}
 	
 	private <T> T choice(List<T> list, int num) {
@@ -212,10 +216,27 @@ public class GameManager {
 	
 	private void beforeAction(PlayerAction action, PlayerState state) {
 		StringBuffer strBuf = new StringBuffer();
+		
 		switch (action) {
 		case IDLE:
-			strBuf.append("어떤 행동을 하시겠습니까?\n");
-			strBuf.append(script.printChoice(getPossibleActions()));
+			switch (curState) {
+			case IDLE:
+				strBuf.append("어떤 행동을 하시겠습니까?\n");
+				strBuf.append(script.printChoice(getPossibleActions()));
+				break;
+			case CONTECT:
+				if (player.connect instanceof Enemy) {
+					strBuf.append("적을 발견하였습니다.\n");
+					strBuf.append("어떤 행동을 취하시겠습니까?\n");
+					strBuf.append(script.printChoice(getPossibleActions()));
+				}
+				break;
+			case BATTLE:
+				break;
+			default:
+				break;
+			}
+			
 			break;
 		case MOVE:
 			strBuf.append("어디로 이동 하시겠습니까?\n");
@@ -224,9 +245,15 @@ public class GameManager {
 			} else {
 				strBuf.append(script.printChoice(getAvailablePlace()));
 			}
-			
-		case BATTLE:
 			break;
+		case BATTLE:
+			if (player.connect instanceof Enemy) {
+				Enemy enemy = (Enemy) player.connect;
+				
+				battle(player, enemy);
+			}
+			break;
+		
 		default:
 			break;
 		}
@@ -268,8 +295,11 @@ public class GameManager {
 					Dungeon dungeon = (Dungeon) toPlace;
 					
 					if (dungeon.getEnemies().size() > 0) {
-						curAction = PlayerAction.IDLE;
+						Enemy enemy = dungeon.getMonster();
+						curState = PlayerState.CONTECT;
+						player.connect = enemy;
 					}
+					curAction = PlayerAction.IDLE;
 				} else {
 					player.move(toPlace);
 					script.move(player.getWhere());
@@ -287,9 +317,17 @@ public class GameManager {
 				} else {
 					// IDLE 상태로 변환 후 선택지
 					curAction = PlayerAction.IDLE;
-					
 				}
 			}
+			
+			break;
+		case BATTLE:
+			if (player.connect instanceof Enemy) {
+				Enemy enemy = (Enemy) player.connect;
+				
+				battle(player, enemy);
+			}
+			
 			
 			break;
 		default:
@@ -298,7 +336,7 @@ public class GameManager {
 		
 		
 		changeState();
-		changePossibleActions(player.getWhere(), state);
+		changePossibleActions(player.getWhere(), curState);
 		updateUI();
 		beforeAction(curAction, state);
 	}

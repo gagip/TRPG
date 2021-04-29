@@ -57,16 +57,4 @@ public class PlaceManager {
 		tempDungeon.availablePlace.add(village);
 	}
 	
-//	
-//	/**
-//	 * 해당 층 던전으로 이동
-//	 * @param floor
-//	 */
-//	public void goToDungeon(int floor) {
-//		List<Dungeon> dungeons = dm.getDungeons();
-//		try {
-//			Dungeon toDungeon = dungeons.get(floor);
-//			gm.player.setWhere(toDungeon);
-//		} catch (Exception e) {}
-//	}
 }

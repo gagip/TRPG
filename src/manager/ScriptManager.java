@@ -4,8 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import character.Player;
 import character.PlayerAction;
 import character.PlayerState;
+import enemy.Enemy;
+import javafx.application.Platform;
 import javafx.print.PrintColor;
 import place.Dungeon;
 import place.Place;
@@ -53,4 +56,20 @@ public class ScriptManager {
 		gm.printGameInfo("안녕하세요. TRPG에 오신 여러분을 환영합니다.\n");
 	}
 	
+	public void printBattle(Player player, Enemy enemy) {
+		StringBuffer strBuf = new StringBuffer();
+		
+		strBuf.append(String.format(
+									"player               enemy\n"
+									+ "%d      현재체력       %d\n"
+									+ "%d       공격력        %d\n"
+									+ "%d       방어력        %d\n"
+									, player.getHp(), enemy.getHp()
+									, player.getAttack(), enemy.getAttack()
+									, player.getDefense(), enemy.getDefense()				
+					));
+		
+		Platform.runLater(() -> gm.printGameInfo(strBuf.toString()));
+	}
+
 }

@@ -29,6 +29,7 @@ public class Player{
 	private Place place;
 	private Inventory inven;
 	private GameManager gm;
+	public Object connect;
 	
 	
 	public Player(int maxHp, int maxAttack, int maxDefense, int money) {
@@ -180,4 +181,5 @@ public class Player{
 	public void setWhere(Place place) {
 		this.place = place;
 	}
+	
 }
