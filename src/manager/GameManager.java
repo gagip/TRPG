@@ -18,6 +18,7 @@ import place.Inn;
 import place.Itrade;
 import place.Place;
 import place.Smith;
+import place.Store;
 import place.Village;
 
 /**
@@ -47,7 +48,7 @@ public class GameManager {
 
 	private List<PlayerAction> possibleActions = new ArrayList<PlayerAction>();
 	private PlayerAction curAction = PlayerAction.IDLE; 
-	private PlayerState curState = PlayerState.INIT;
+	private PlayerState curState = PlayerState.IDLE;
 	public boolean canInput = false;
 	
 	private GameManager() {}
@@ -78,7 +79,7 @@ public class GameManager {
 		// TODO 타이머 시작
 		init();
 		script.startScene();
-		beforeAction(curAction, curState);
+		beforeAction();
 	}
 	
 	public void win(Player player, Enemy enemy) {
@@ -93,6 +94,8 @@ public class GameManager {
 		exp += enemy.getExp();
 		player.setExp(exp);
 		strbuf.append(String.format("경험치: +%d\n", enemy.getExp()));
+		
+		enemy.die((Dungeon) player.getWhere());
 		
 		printGameInfo(strbuf.toString());
 	}
@@ -125,7 +128,7 @@ public class GameManager {
 		possibleActions.add(PlayerAction.EQUIP);
 		possibleActions.add(PlayerAction.USE);
 		
-		// 장소에 따른 행동 정의
+		// 장소, 상태에 따른 행동 정의
 		if (place instanceof Itrade) {
 			possibleActions.add(PlayerAction.BUY);
 			possibleActions.add(PlayerAction.SELL);
@@ -136,7 +139,7 @@ public class GameManager {
 			case BATTLE:
 				possibleActions.add(PlayerAction.RETEAT);
 				break;
-			case CONTECT:
+			case CONTECT_ENEMY:
 				possibleActions.add(PlayerAction.BATTLE);
 				break;
 			default:
@@ -151,38 +154,62 @@ public class GameManager {
 		
 		// 가진 정보들을 종합하여 상태 결정
 		switch (curState) {
-		case INIT:
-			curState = PlayerState.IDLE;
-			break;
 		case IDLE:
-			if (place instanceof Dungeon) {
-				// 몬스터를 만나면
-				Dungeon dungeon = (Dungeon) place;
-				Enemy enemy = dungeon.getMonster();
-				if (enemy != null) 		curState = PlayerState.CONTECT;
-			} 
-			break;
-		case BATTLE:
-			if (place instanceof Dungeon) {
-				// 몬스터를 만나면
-				Dungeon dungeon = (Dungeon) place;
-				Enemy enemy = dungeon.getMonster();
-				if (enemy != null) 		curState = PlayerState.CONTECT;
-			} else {
-				curState = PlayerState.IDLE;
-			}
-			break;
-		case CONTECT:
-			if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
+			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
+			else if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
+			else if (curAction == PlayerAction.EQUIP ||
+					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
 			else if (curAction == PlayerAction.BUY ||
-					curAction == PlayerAction.SELL)	curState = PlayerState.TRADE;
+					curAction == PlayerAction.SELL)		curState = PlayerState.TRADE;
 			break;
 			
-		case TRADE:
+		case MOVE:
 			curState = PlayerState.IDLE;
+			
+			// 도착 장소에 사람이 몬스터가 있다면
+			if (place instanceof Dungeon) {
+				Dungeon dungeon = (Dungeon) place;
+				if (dungeon.getMonster() != null) 		curState = PlayerState.CONTECT_ENEMY;
+			} else if (place instanceof Inn ||
+					place instanceof Smith ||
+					place instanceof Store) 			curState = PlayerState.CONTECT_NPC;
+			break;
+			
+		case CONTECT_ENEMY:
+			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
+			else if (curAction == PlayerAction.EQUIP ||
+					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
+			else if (curAction == PlayerAction.BATTLE)	curState = PlayerState.BATTLE;
+			break;
+			
+		case CONTECT_NPC:
+			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
+			else if (curAction == PlayerAction.EQUIP ||
+					curAction == PlayerAction.USE)		curState = PlayerState.SEARCH;
+			else if (curAction == PlayerAction.BUY ||
+					curAction == PlayerAction.SELL ||
+					curAction == PlayerAction.REST)		curState = PlayerState.TRADE;
+			break;
+			
+		case BATTLE:
+			// 전투 종료 후 
+			curState = PlayerState.IDLE;
+			
+			// 도착 장소에 사람이 몬스터가 있다면
+			if (place instanceof Dungeon) {
+				Dungeon dungeon = (Dungeon) place;
+				if (dungeon.getEnemies().size() > 0) {
+					curState = PlayerState.CONTECT_ENEMY;
+				}
+			} else if (place instanceof Inn ||
+					place instanceof Smith ||
+					place instanceof Store) {
+				curState = PlayerState.CONTECT_NPC;
+			}
 			break;
 		default:
 			break;
+		
 		}
 	}
 	
@@ -235,6 +262,69 @@ public class GameManager {
 		controllor.gameInfoTxtAr.appendText(str);
 	}
 	
+	/**
+	 * 선택지 제공
+	 */
+	private void beforeAction() {
+		StringBuffer strBuf = new StringBuffer();
+		Place place = player.getWhere();
+		
+		switch (curState) {
+		case IDLE:
+			strBuf.append("어떤 행동을 하시겠습니까?\n");
+			strBuf.append(script.printChoice(getPossibleActions()));
+			break;
+		case MOVE:
+			strBuf.append("어디로 이동 하시겠습니까?\n");
+			// 장소마다 다르게 선택지 책정
+			if (place instanceof Dungeon) { 
+				strBuf.append(script.printChoice(dm.getDungeons()));
+			} else {
+				strBuf.append(script.printChoice(getAvailablePlace()));
+			}
+			break;
+		case CONTECT_ENEMY:
+			if (place instanceof Dungeon) {
+				Dungeon dungeon = (Dungeon) place;
+				Enemy enemy = dungeon.getMonster();
+				
+				strBuf.append(String.format(
+						"%s (을)를 마주쳤다.\n"
+						+ "-----------------\n"
+						+ "체력: %d\n"
+						+ "공격력: %d\n"
+						+ "방어력: %d\n"
+						+ "획득 골드: %d\n"
+						+ "획득 경험치: %d\n"
+						+ "-----------------\n" 
+						, enemy
+						, enemy.getHp()
+						, enemy.getAttack()
+						, enemy.getDefense()
+						, enemy.getMoney()
+						, enemy.getExp()
+				));
+				strBuf.append("어떤 행동을 하시겠습니까?\n");
+				strBuf.append(script.printChoice(getPossibleActions()));
+			}
+			break;
+		case CONTECT_NPC:
+			break;
+		case BATTLE:
+			//
+			break;
+		default:
+			break;
+		}
+
+	
+		// 입력 가능
+		canInput = true;
+		printGameInfo(strBuf.toString());
+		
+		// 이후 입력 대기
+	}
+	
 	public void userInput(String str) {
 		// 한 자리 숫자만 처리
 		if (!canInput) return;  
@@ -246,132 +336,47 @@ public class GameManager {
 		int choice = Integer.parseInt(str);
 		
 		
-		excuteAction(curAction, curState, choice);
-	}
-	
-	private void beforeAction(PlayerAction action, PlayerState state) {
-		StringBuffer strBuf = new StringBuffer();
-		
-		switch (action) {
-		case IDLE:
-			switch (curState) {
-			case INIT:
-			case IDLE:
-				strBuf.append("어떤 행동을 하시겠습니까?\n");
-				strBuf.append(script.printChoice(getPossibleActions()));
-				break;
-			case CONTECT:
-				if (player.connect instanceof Enemy) {
-					strBuf.append("적을 발견하였습니다.\n");
-					strBuf.append("어떤 행동을 취하시겠습니까?\n");
-					strBuf.append(script.printChoice(getPossibleActions()));
-				}
-				break;
-			case BATTLE:
-				break;
-			default:
-				break;
-			}
-			
-			break;
-		case MOVE:
-			strBuf.append("어디로 이동 하시겠습니까?\n");
-			if (player.getWhere() instanceof Dungeon) {
-				strBuf.append(script.printChoice(dm.getDungeons()));
-			} else {
-				strBuf.append(script.printChoice(getAvailablePlace()));
-			}
-			break;
-		case BATTLE:
-			if (player.connect instanceof Enemy) {
-				Enemy enemy = (Enemy) player.connect;
-				
-				battle(player, enemy);
-			}
-			break;
-		
-		default:
-			break;
-		}
-	
-		// 입력 가능
-		canInput = true;
-		printGameInfo(strBuf.toString());
-		
-		// 이후 입력 대기
+		excuteAction(choice);
 	}
 	
 	/**
 	 * 액션 처리 후 결과
-	 * @param action
-	 * @param state
 	 * @param choice
 	 */
-	private void excuteAction(PlayerAction action, PlayerState state, int choice) {
+	private void excuteAction(int choice) {
 		Place place = player.getWhere();
-		switch (action) {
+		
+		// 액션 실행 이전에 예외처리
+		if (curState != PlayerState.MOVE)
+			curAction = choice(getPossibleActions(), choice);
+		else if (curState == PlayerState.BATTLE)
+			curAction = PlayerAction.IDLE;
+		else
+			curAction = PlayerAction.MOVE;
+		
+		switch (curAction) {
 		case IDLE:
-			switch (state) {
-			case IDLE:
-				
-				break;
-
-			default:
-				curAction = choice(possibleActions, choice);
-				script.idle(curAction);
-				break;
-			}
-			
 			break;
 		case MOVE:
-			// 던전이라면 몇 층으로 갈지 선택지 제공
-			if (place instanceof Dungeon) {
-				
-				if (place.toString().equals("던전 입구")) {
-					
-				}
-				// 해당 장소로 이동
-				Place toPlace = choice(dm.getDungeons(), choice);
-				player.move(toPlace);
-				script.move(player.getWhere());
-				
-				if (toPlace instanceof Dungeon) {
-					// 적이 있으면 행동 재설정
-					Dungeon dungeon = (Dungeon) toPlace;
-					
-					if (dungeon.getEnemies().size() > 0) {
-						Enemy enemy = dungeon.getMonster();
-						curState = PlayerState.CONTECT;
-						player.connect = enemy;
-					}
-					curAction = PlayerAction.IDLE;
+			if (curState == PlayerState.MOVE) {
+				if (place instanceof Dungeon) {
+					Place toPlace = choice(dm.getDungeons(), choice);
+					player.move(toPlace);
+					script.move(player.getWhere());
 				} else {
+					Place toPlace = choice(getAvailablePlace(), choice);
 					player.move(toPlace);
 					script.move(player.getWhere());
 				}
-				
-				
-			} else {
-				// 해당 장소로 이동
-				Place toPlace = choice(getAvailablePlace(), choice);
-				player.move(toPlace);
-				script.move(player.getWhere());
-				
-				if (toPlace instanceof Dungeon) {
-					
-				} else {
-					// IDLE 상태로 변환 후 선택지
-					curAction = PlayerAction.IDLE;
-				}
 			}
-			
 			break;
 		case BATTLE:
-			if (player.connect instanceof Enemy) {
-				Enemy enemy = (Enemy) player.connect;
-				
+			if (place instanceof Dungeon) {
+				Enemy enemy = ((Dungeon) place).getMonster();
 				battle(player, enemy);
+				
 			}
+			
 			break;
 		default:
 			break;
@@ -381,7 +386,7 @@ public class GameManager {
 		changeState();
 		changePossibleActions(player.getWhere(), curState);
 		updateUI();
-		beforeAction(curAction, state);
+		beforeAction();
 	}
 	
 

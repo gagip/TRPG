@@ -1,6 +1,8 @@
 package enemy;
 
 import character.Player;
+import manager.DungeonManager;
+import place.Dungeon;
 
 /**
  * 몬스터 클래스
@@ -20,6 +22,7 @@ public class Enemy {
 	
 	
 	public Enemy(int maxHp, int maxAttack, int maxDefense, int money, int exp) {
+		this.name = "적";
 		this.maxHp = maxHp;
 		this.hp = maxHp;
 		this.maxAttack = maxAttack;
@@ -41,6 +44,10 @@ public class Enemy {
 		player.setHp(playerCurHp);
 	}
 
+	public void die(Dungeon floor) {
+		DungeonManager.getInstance().removeEnemy(floor);;
+	}
+	
 	@Override
 	public String toString() {
 		return name;

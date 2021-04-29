@@ -2,7 +2,10 @@ package character;
 
 public enum PlayerState {
 	IDLE,
-	CONTECT,
+	MOVE,
+	SEARCH,
+	CONTECT_ENEMY,
+	CONTECT_NPC,
 	BATTLE,
 	TRADE,
 }

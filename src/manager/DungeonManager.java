@@ -43,10 +43,17 @@ public class DungeonManager {
 		dungeons.add(dungeon1);
 		dungeons.add(dungeon2);
 		
+		// 마지막 항목에는 마을로 돌아갈 수 있게 제어
 		dungeons.add(PlaceManager.getInstance().village);
 	}
 	
 	public List<Place> getDungeons(){
 		return dungeons;
+	}
+	
+	public void removeEnemy(Dungeon dungeon) {
+		int dungeonIdx = dungeons.indexOf(dungeon);
+		Dungeon targetDungeon = (Dungeon) dungeons.get(dungeonIdx);
+		targetDungeon.getEnemies().poll();
 	}
 }
