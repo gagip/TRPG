@@ -34,8 +34,8 @@ public class DungeonManager {
 		// 몬스터 파티 생성
 		Queue<Enemy> enemy1 = new LinkedList<Enemy>();
 		enemy1.offer(new Bat(5, 1, 0, 50));
-		enemy1.offer(new Bat(7, 2, 1, 100));
-		enemy1.offer(new Bat(15, 2, 1, 100));
+		enemy1.offer(new Goblin(7, 2, 1, 100));
+		enemy1.offer(new Thief(15, 2, 1, 100));
 		Queue<Enemy> enemy2 = new LinkedList<Enemy>();
 		enemy2.offer(new Bat(10, 3, 0, 100));
 		enemy2.offer(new Goblin(20, 3, 1, 200));

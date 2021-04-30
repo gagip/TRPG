@@ -47,7 +47,7 @@ public class GameManager {
 	public static final int DEFAULT_HP = 50;
 	public static final int DEFAULT_ATTACK = 3;
 	public static final int DEFAULT_DEFENSE = 1;
-	public static final int DEFAULT_TIME = 300;
+	public static final int DEFAULT_TIME = 500;
 	
 	public Player player;
 
