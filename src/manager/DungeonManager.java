@@ -45,7 +45,7 @@ public class DungeonManager {
 		enemy3.offer(new Goblin(50, 5, 1, 200));
 		enemy3.offer(new Goblin(300, 5, 2, 400));
 		Queue<Enemy> enemy4 = new LinkedList<Enemy>();
-		enemy2.offer(new Boss(500, 20, 7, 1000));
+		enemy4.offer(new Boss(500, 20, 7, 1000));
 		Dungeon dungeon1 = new Dungeon("던전 1층", enemy1);
 		Dungeon dungeon2 = new Dungeon("던전 2층", enemy2);
 		Dungeon dungeon3 = new Dungeon("던전 3층", enemy3);

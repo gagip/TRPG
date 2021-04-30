@@ -40,9 +40,9 @@ public class BattleManager {
 					} catch (InterruptedException e) {e.printStackTrace();}
 					
 					// 서로 공격
+					enemy.passive(player);
 					player.attack(enemy);
 					enemy.attack(player);
-					enemy.passive(player);
 					
 					// 결과 출력
 					turn += 1;

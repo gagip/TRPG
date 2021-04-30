@@ -14,7 +14,7 @@ public class InnNpc extends Npc{
 	
 	public InnNpc() {
 		name = "여관 주인";
-		script = "숙박비는 50골드이고, 잃은 체력에 비례해 타이머가 차감됩니다. (hp 10당 10초 차감)";
+		script = "숙박비는 50골드이고, 잃은 체력에 비례해 타이머가 차감됩니다. (hp 1당 1초 차감)";
 	}
 	
 	public void rest(Player player) {
@@ -25,7 +25,10 @@ public class InnNpc extends Npc{
 			// 비용 지불
 			player.setGold(gold-charge);
 			// TODO 타이머 차감
+			int timer = GameManager.getInstance().getTimer();
+			int gapHp = player.getMaxHp() - player.getHp();
 			
+			GameManager.getInstance().setTimer(timer-gapHp);
 			// 체력 풀 회복
 			player.setHp(player.getMaxHp());
 			

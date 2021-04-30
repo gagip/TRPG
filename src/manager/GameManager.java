@@ -40,14 +40,14 @@ public class GameManager {
 	private ScriptManager script;
 	private BattleManager bm;
 	private PlaceManager pm;
-	
+	public boolean running = false;
+	private int timer;
 	
 	// 초기값
 	public static final int DEFAULT_HP = 50;
 	public static final int DEFAULT_ATTACK = 3;
 	public static final int DEFAULT_DEFENSE = 1;
-	public static final float DEFAULT_BATTLE_TIME = 1f;
-	public static final float DEFAULT_TIMER = 3f;
+	public static final int DEFAULT_TIME = 300;
 	
 	public Player player;
 
@@ -70,9 +70,10 @@ public class GameManager {
 		pm = PlaceManager.getInstance();
 		
 		pm.init();
+		timer = DEFAULT_TIME;
 		
 		// 플레이어 생성
-		player = new Player(DEFAULT_HP, DEFAULT_ATTACK, DEFAULT_DEFENSE, 1000);
+		player = new Player(DEFAULT_HP, DEFAULT_ATTACK, DEFAULT_DEFENSE, 100000);
 		player.setWhere(pm.village);
 		changePossibleActions(player.getWhere(), curState);
 		
@@ -80,18 +81,39 @@ public class GameManager {
 	}
 	
 	
-	public void start() {
+	public void gameStart() {
 		// TODO 타이머 시작
 		init();
+		running = true;
+		controllor.startTimer();
 		script.startScene();
 		beforeAction();
 	}
 	
+	public void subtractTimer() {
+		this.timer--;
+	}
+	
+	public int getTimer() {
+		return this.timer;
+	}
+	
+	public void setTimer(int timer) {
+		this.timer = timer;
+	}
+	
+	public boolean getRunning() {
+		return running;
+	}
+	
 	public void gameClear() {
-		printGameInfo("게임을 클리어 하셨습니다.\n");
+		running = false;
+		int time = timer;
+		printGameInfo(String.format("게임을 %d초 남기고 클리어 하셨습니다.\n", time));
 	}
 	
 	public void gameOver() {
+		running = false;
 		printGameInfo("게임 오버\n 시작 버튼을 눌려 다시 실행해주세요\n");
 	}
 	
@@ -116,6 +138,7 @@ public class GameManager {
 		player.setHp(player.getMaxHp());
 		player.setGold(player.getGold() - 1000);
 		// TODO 타이머 차감
+		timer -= 100;
 	}
 	
 	

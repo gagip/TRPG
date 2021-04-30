@@ -9,10 +9,10 @@ public class LongSword extends Item implements IEquipment {
 
 	public LongSword() {
 		name = "장검";
-		description = "공격력 7을 증가 시킵니다";
+		description = "공격력 999을 증가 시킵니다";
 		part = 2;
-		attack = 7;
-		gold = 800;
+		attack = 999;
+		gold = 10000;
 	}
 	
 	@Override

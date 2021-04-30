@@ -35,6 +35,7 @@ public class Controller implements Initializable {
 	private Thread timerThread;
 	
 	
+	
 	public Controller() {
 		// 게임 매니저 세팅
 		this.gm = GameManager.getInstance();
@@ -52,7 +53,7 @@ public class Controller implements Initializable {
 		startBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				gm.start();
+				gm.gameStart();
 			}
 		});
 		
@@ -66,6 +67,29 @@ public class Controller implements Initializable {
 		});
 	}
 		
+	public void startTimer() {
+		timerThread = new Thread(new Timer());
+		timerThread.start();
+	}
 	
+	private class Timer implements Runnable {
+		@Override
+		public void run() {
+			while(gm.getRunning()) {
+				try {
+					gm.subtractTimer();
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							timerLbl.setText(Integer.toString(gm.getTimer()));
+						}
+					});
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }
 
