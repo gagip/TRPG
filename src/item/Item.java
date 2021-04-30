@@ -19,6 +19,12 @@ public class Item {
 	protected int gold;
 	
 	
+	@Override
+	public String toString() {
+		if (name.isEmpty()) return "(비어있음)";
+		return name;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -28,5 +34,11 @@ public class Item {
 		return description;
 	}
 
-
+	public int getGold() {
+		return gold;
+	}
+	
+	public int getPart() {
+		return part;
+	}
 }

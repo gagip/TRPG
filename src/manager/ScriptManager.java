@@ -40,9 +40,23 @@ public class ScriptManager {
 	
 	public <T> String printChoice(List<T> t) {
 		StringBuffer strBuf = new StringBuffer();
+		
 		for (int i=0; i<t.size(); i++) {
 			if (t.get(i) == null) continue;
 			strBuf.append(String.format("[%d] %s ", i, t.get(i).toString()));
+		}
+		strBuf.append("\n");
+		
+		return strBuf.toString();
+	}
+	
+	public String printItem(List<Item> items) {
+		StringBuffer strBuf = new StringBuffer();
+		
+		for (int i=0; i<items.size(); i++) {
+			Item item = items.get(i);
+			strBuf.append(String.format("[%d] %s (%s) %dG\n"
+										, i, item, item.getDescription(), item.getGold()));
 		}
 		strBuf.append("\n");
 		

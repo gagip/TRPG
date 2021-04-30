@@ -3,6 +3,8 @@ package place;
 import java.util.ArrayList;
 import java.util.List;
 
+import npc.Npc;
+
 /**
  * 장소 클래스
  * @author gagip
@@ -11,11 +13,13 @@ import java.util.List;
 public class Place {
 	protected String name;
 	protected String comment;
+	protected Npc npc;
 	public List<Place> availablePlace;
 	
 	public Place() {
 		name = "";
 		comment = "";
+		npc = null;
 		availablePlace = new ArrayList<Place>();
 	}
 	
@@ -25,6 +29,10 @@ public class Place {
 	
 	public String getComment() {
 		return comment;
+	}
+	
+	public Npc getNpc() {
+		return npc;
 	}
 	
 	@Override

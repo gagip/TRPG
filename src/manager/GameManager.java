@@ -14,10 +14,13 @@ import item.Inventory;
 import item.Item;
 import item.consumption.IConsumption;
 import item.equipment.IEquipment;
+import npc.InnNpc;
+import npc.Itrade;
 import npc.Npc;
+import npc.SmithNpc;
+import npc.StoreNpc;
 import place.Dungeon;
 import place.Inn;
-import place.Itrade;
 import place.Place;
 import place.Smith;
 import place.Store;
@@ -84,6 +87,14 @@ public class GameManager {
 		beforeAction();
 	}
 	
+	public void gameClear() {
+		printGameInfo("게임을 클리어 하셨습니다.\n");
+	}
+	
+	public void gameOver() {
+		printGameInfo("게임 오버\n 시작 버튼을 눌려 다시 실행해주세요\n");
+	}
+	
 	public void win(Player player, Enemy enemy) {
 		StringBuffer strbuf = new StringBuffer();
 		
@@ -127,7 +138,8 @@ public class GameManager {
 		possibleActions.add(PlayerAction.INVEN);
 		
 		// 장소, 상태에 따른 행동 정의
-		if (place instanceof Itrade) {
+		if (place instanceof Smith ||
+			place instanceof Store) {
 			possibleActions.add(PlayerAction.BUY);
 			possibleActions.add(PlayerAction.SELL);
 		} else if (place instanceof Inn) {
@@ -182,8 +194,7 @@ public class GameManager {
 			if (curAction == PlayerAction.MOVE)			curState = PlayerState.MOVE;
 			else if (curAction == PlayerAction.INVEN)	curState = PlayerState.SEARCH;
 			else if (curAction == PlayerAction.BUY ||
-					curAction == PlayerAction.SELL ||
-					curAction == PlayerAction.REST)		curState = PlayerState.TRADE;
+					curAction == PlayerAction.SELL)		curState = PlayerState.TRADE;
 			break;
 			
 		case BATTLE:
@@ -206,6 +217,7 @@ public class GameManager {
 			curState = PlayerState.IDLE;
 			break;
 		case TRADE:
+			curState = PlayerState.IDLE;
 			break;
 		default:
 			break;
@@ -232,17 +244,18 @@ public class GameManager {
 	}
 	
 	private void printStat(Player player) {
+		List<IEquipment> equipments = player.getEquipment();
 		controllor.statTxtAr.setText(String.format(
 				"현재 장소: %s\n"
-				+ "체력: %d/%d\n"
-				+ "공격력: %d\n"
-				+ "방어력: %d\t돈: %d\n"
-				+ "현재 행동: %s\t현재 상태: %s"
+				+ "체력: %d/%d    머리: %s\n"
+				+ "공격력: %d     옷: %s\n"
+				+ "방어력: %d     무기: %s\n"
+				+ "돈: %d\n"
 				, player.getWhere().toString()
-				, player.getHp(), player.getMaxHp()
-				, player.getAttack()
-				, player.getDefense(), player.getGold()
-				, curAction.toString(), curState.toString()
+				, player.getHp(), player.getMaxHp(), equipments.get(0)
+				, player.getAttack(), equipments.get(1)
+				, player.getDefense(), equipments.get(2)
+				, player.getGold()
 		));
 	}
 	
@@ -268,6 +281,7 @@ public class GameManager {
 	private void beforeAction() {
 		StringBuffer strBuf = new StringBuffer();
 		Place place = player.getWhere();
+		Npc npc; 
 		
 		switch (curState) {
 		case IDLE:
@@ -309,6 +323,9 @@ public class GameManager {
 			}
 			break;
 		case CONTECT_NPC:
+			npc = place.getNpc();
+			strBuf.append(npc.talk());
+			strBuf.append(script.printChoice(getPossibleActions()));
 			break;
 		case BATTLE:
 			//
@@ -317,6 +334,18 @@ public class GameManager {
 			strBuf.append("어떤 아이템을 사용하실껀가요?\n");
 			strBuf.append(script.printChoice(player.getInven().getItems()));
 			strBuf.append("사용하실 아이템이 없다면 아무 숫자를 입력하세요\n");
+			break;
+		case TRADE:
+			if (curAction == PlayerAction.BUY) {
+				npc = place.getNpc();
+
+				strBuf.append("무엇을 사실껀가요?\n");
+				strBuf.append(script.printItem(npc.getDisplayRack()));
+			} else if (curAction == PlayerAction.SELL) {
+				strBuf.append("무엇을 파실껀가요?\n");
+				strBuf.append(script.printChoice(player.getInven().getItems()));
+				strBuf.append("파실 아이템이 없다면 빈 아이템 공간 숫자를 입력하세요\n");
+			}
 			break;
 		default:
 			break;
@@ -350,6 +379,7 @@ public class GameManager {
 	 */
 	private void excuteAction(int choice) {
 		Place place = player.getWhere();
+		Npc npc;
 		
 		// 액션 실행 이전에 예외처리 (다른 선택지 제공)
 		if (curState == PlayerState.BATTLE)
@@ -358,6 +388,8 @@ public class GameManager {
 			curAction = PlayerAction.INVEN;
 		else if (curState == PlayerState.MOVE)
 			curAction = PlayerAction.MOVE;
+		else if (curState == PlayerState.TRADE)
+			;
 		else
 			curAction = choice(getPossibleActions(), choice);
 			
@@ -365,32 +397,36 @@ public class GameManager {
 		switch (curAction) {
 		case IDLE:
 			break;
+			
 		case MOVE:
 			if (curState == PlayerState.MOVE) {
 				if (place instanceof Dungeon) {
 					Place toPlace = choice(dm.getDungeons(), choice);
-					player.move(toPlace);
-					script.move(player.getWhere());
+					if (toPlace != null) {
+						player.move(toPlace);
+						script.move(player.getWhere());
+					}
 				} else {
 					Place toPlace = choice(getAvailablePlace(), choice);
-					player.move(toPlace);
-					script.move(player.getWhere());
+					if (toPlace != null) {
+						player.move(toPlace);
+						script.move(player.getWhere());
+					}
 				}
 			}
 			break;
+			
 		case BATTLE:
 			if (place instanceof Dungeon) {
 				Enemy enemy = ((Dungeon) place).getMonster();
 				battle(player, enemy);
-				
 			}
-			
 			break;
 			
 		case INVEN:
 			if (curState == PlayerState.SEARCH) {
 				Inventory inven = player.getInven();
-				Item item = choice(inven.getItems(), choice);
+				Item item = inven.getItem(choice);
 				if (item instanceof IConsumption) {
 					IConsumption consumption = (IConsumption) item;
 					
@@ -401,6 +437,37 @@ public class GameManager {
 					
 					player.equip(equipment);
 					script.usedItem(item);
+				}
+			}
+			break;
+			
+		case REST:
+			InnNpc innNpc = (InnNpc) place.getNpc();
+			innNpc.rest(player);
+			break;
+			
+		case BUY:
+			if (curState == PlayerState.TRADE) {
+				npc = place.getNpc();
+				if (npc instanceof SmithNpc) {
+					SmithNpc smithNpc = (SmithNpc) npc;
+					smithNpc.sell(choice, player);
+				} else if (npc instanceof StoreNpc) {
+					StoreNpc storeNpc = (StoreNpc) npc;
+					storeNpc.sell(choice, player);
+				}
+			}
+			
+			break;
+		case SELL:
+			if (curState == PlayerState.TRADE) {
+				npc = place.getNpc();
+				if (npc instanceof SmithNpc) {
+					SmithNpc smithNpc = (SmithNpc) npc;
+					smithNpc.buy(choice, player);
+				} else if (npc instanceof StoreNpc) {
+					StoreNpc storeNpc = (StoreNpc) npc;
+					storeNpc.buy(choice, player);
 				}
 			}
 			break;

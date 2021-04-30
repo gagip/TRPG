@@ -31,7 +31,14 @@ public class Inventory {
 	}
 	
 	public Item getItem(int idx) {
-		return items.get(idx);
+		Item item = items.get(idx);
+		items.set(idx, null);
+		return item;
+	}
+	
+	public void setItem(Item item) {
+		int idx = items.indexOf(null);
+		if (idx != -1) items.set(idx, item);
 	}
 	
 	public List<Item> getItems() {

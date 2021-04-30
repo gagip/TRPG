@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 import enemy.Enemy;
+import manager.DungeonManager;
 
 /**
  * 몬스터들이 있는 던전 클래스
@@ -14,7 +15,7 @@ import enemy.Enemy;
 public class Dungeon extends Place {
 	
 	private Queue<Enemy> enemies = new LinkedList<Enemy>();
-	private boolean isClear = false;
+	private boolean canEnter = false;
 	
 	// 임시 던전
 	public Dungeon() {
@@ -30,7 +31,7 @@ public class Dungeon extends Place {
 	public Enemy getMonster() {
 		if (enemies.size() > 0)
 			return enemies.peek();
-		else
+		else 
 			return null;
 	}
 	
@@ -41,5 +42,13 @@ public class Dungeon extends Place {
 
 	public Queue<Enemy> getEnemies() {
 		return enemies;
+	}
+	
+	public boolean getCanEnter(){
+		return canEnter;
+	}
+	
+	public void setCanEnter() {
+		canEnter = true;
 	}
 }
